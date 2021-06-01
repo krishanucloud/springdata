@@ -1,39 +1,29 @@
 version: '3.7'
 services:
-  watchtower:
-    command: --label-enable --cleanup --interval 100
-    image: containrrr/watchtower
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
-    network_mode: none
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
   mysql-student:
     image: mysql:8.0.25
     command: --default-authentication-plugin=mysql_native_password
     container_name: mysql-student
     ports:
-      - "3307:3306"
+      - "3307:3306"    
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: krishanu
       MYSQL_PASSWORD: krishanu
-      MYSQL_DATABASE: student_guide
+      MYSQL_DATABASE: student_guide  
     networks:
       - springdata
   spring-data:
-    image: krishanucloud/spring-data:latest
-    container_name: spring-data
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: spring-data   
     ports:
       - "8082:8082"
     restart: always
     depends_on:
       - mysql-student
-      - watchtower
     networks:
       - springdata
 
